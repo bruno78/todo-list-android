@@ -4,18 +4,29 @@ package com.brunogtavares.todolist.database;
  * Created by brunogtavares on 6/16/18.
  */
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.util.Date;
 
-// TODO (2) Annotate the class with Entity. Use "task" for the table name
+// Completed (2) Annotate the class with Entity. Use "task" for the table name
+@Entity(tableName = "task")
 public class TaskEntry {
 
-    // TODO (3) Annotate the id as PrimaryKey. Set autoGenerate to true.
+    // Completed (3) Annotate the id as PrimaryKey. Set autoGenerate to true.
+    @PrimaryKey(autoGenerate = true)
     private int id;
+    @ColumnInfo(name = "description")
     private String description;
+    @ColumnInfo(name = "priority")
     private int priority;
+    @ColumnInfo(name = "updated_at")
     private Date updatedAt;
 
-    // TODO (4) Use the Ignore annotation so Room knows that it has to use the other constructor instead
+    // Completed (4) Use the Ignore annotation so Room knows that it has to use the other constructor instead
+    @Ignore
     public TaskEntry(String description, int priority, Date updatedAt) {
         this.description = description;
         this.priority = priority;
