@@ -1,14 +1,18 @@
 package com.brunogtavares.todolist;
 
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 
 import com.brunogtavares.todolist.database.AppDatabase;
@@ -69,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         int position = viewHolder.getAdapterPosition();
                         List<TaskEntry> tasks = mAdapter.getTasks();
                         mDb.taskDao().deleteTask(tasks.get(position));
-                        // Refreshes the UI
-                        retrieveTasks();
                     }
                 });
             }
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         });
 
         mDb = AppDatabase.getInstance(getApplicationContext());
+        retrieveTasks();
     }
 
     // We could query the database onCreate but it would never be refreshed unless the activity is re-created.
@@ -100,21 +103,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     @Override
     protected void onResume() {
         super.onResume();
-        retrieveTasks();
     }
 
     private void retrieveTasks() {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        Log.d(TAG, "Actively retrieving the tasks from the Database");
+        final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
+        tasks.observe(this, new Observer<List<TaskEntry>>() {
             @Override
-            public void run() {
-                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
-                // This will be simplified when applying Android Architecture Component
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(tasks);
-                    }
-                });
+            public void onChanged(@Nullable List<TaskEntry> taskEntries) {
+                Log.d(TAG, "Receiving database update from LiveData");
+                mAdapter.setTasks(taskEntries);
             }
         });
     }
