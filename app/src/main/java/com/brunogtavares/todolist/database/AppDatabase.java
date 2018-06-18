@@ -22,15 +22,12 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "todolist";
     private static AppDatabase sInstance;
 
-    public static AppDatabase getsInstance(Context context) {
+    public static AppDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
                 Log.d(LOG_TAG, "Creating new database instance");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
-                        // Queries should be done in a separate thread to avoid locking the UI
-                        // We will allow this ONLY TEMPORARILY to see that DB is working
-                        .allowMainThreadQueries()
                         .build();
             }
         }

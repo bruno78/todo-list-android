@@ -48,7 +48,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
         initViews();
 
-        mDb = AppDatabase.getsInstance(getApplicationContext());
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_TASK_ID)) {
             mTaskId = savedInstanceState.getInt(INSTANCE_TASK_ID, DEFAULT_TASK_ID);
@@ -103,9 +103,14 @@ public class AddTaskActivity extends AppCompatActivity {
         int priority = getPriorityFromViews();
         Date date = new Date();
 
-        TaskEntry taskEntry = new TaskEntry(description, priority, date);
-        mDb.taskDao().insertTask(taskEntry);
-        finish();
+        final TaskEntry taskEntry = new TaskEntry(description, priority, date);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+               mDb.taskDao().insertTask(taskEntry);
+               finish();
+            }
+        });
     }
 
     /**
