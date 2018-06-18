@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
+import com.brunogtavares.todolist.database.AppDatabase;
+
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
 
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     // Member variables for the adapter and RecyclerView
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
+
+    private AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 startActivity(addTaskIntent);
             }
         });
+
+        mDb = AppDatabase.getsInstance(getApplicationContext());
+    }
+
+    // We could query the database onCreate but it would never be refreshed unless the activity is re-created.
+    // A solution for that is to query onResume
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.setTasks(mDb.taskDao().loadAllTasks());
     }
 
     @Override
