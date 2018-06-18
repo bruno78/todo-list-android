@@ -41,3 +41,10 @@ Room uses the DAO to create a clean API for your code.
 
 ## Database 
 
+The database uses DAO and entity. The database is an abstract class that extends RoomDatabase. It 
+contains a method that will return an AppDatabase using the Singleton pattern\*.
+
+*\* A singleton patter is a software design pattern that restricts the instantiation of a class to one
+ object. This is useful when we want to ensure that only one object of a given class is created.*
+ 
+ 
