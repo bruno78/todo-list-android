@@ -62,3 +62,31 @@ Observers that are subscribed to it, and notify all of them when there is any re
 ViewModel allows data to survive to configuration changes such as rotation. The life cycle of a ViewModel
 starts when an activity is created and lasts until it is finished. Because of that, we can cache complex
 data in the ViewModel.
+
+## 4. LifeCycle 
+
+The last component of Android Architecture Component is LifeCycle. It ensures that the changes in the data notify 
+the observers even when they are not in the same Activity where they occurred. One of the reasons this is possible 
+it's because LiveData supports LifeCycle out of the box. One of advantages of LiveData being a lifecycle aware component is
+that it will also know when the state of the activity is destroyed, and when that happens, it will automatically unsubscribe
+the observers to avoid memory leaks. 
+
+LifeCycle also will allow non-lifecycle objects to be lifecycle aware. It has two interfaces:
+
+1. lifecycle owner: Objects with a lifecycle, like Activities and Fragments.
+
+2. lifecycle observers: Observe LifeCycle Owners and get notified on lifecycle changes. 
+
+### Repository 
+
+A Repository is a class that abstracts access to multiple data sources. It handles data oprations. It provides a 
+clean API to the rest of the app for app data. It manages query threads and allwos you to use multiple backends. 
+
+The architecture can be improved by extracting all that logic to a common place, or Repository. This way, 
+all database related operations can be handled from a single location, while being accessible from anywhere in our app.
+This is an example of using the Single Responsibility Principle. 
+
+Using a Repository you keep the code change to one place. 
+
+In the most common example, the repository implements the logic or dedicing whether to fetch data from a network
+or use results cached in a local database. 
